@@ -25,9 +25,10 @@ $ ./vscodeInstaller.sh --help
     Show this message
 --uninstall
     Uninstall vscode
--c | --chown
+-c | --chown <username>
     Change owner of /usr/share/code folder to qwreey
     This option may useful if you use vscode patch extension
+    Give \$USER to current user
 -k | --keep
     Keep .dev .tar.gz .rpm file in cwd
 ```

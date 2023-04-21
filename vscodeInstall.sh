@@ -11,9 +11,10 @@ help() {
     echo "    Show this message"
     echo "--uninstall"
     echo "    Uninstall vscode"
-    echo "-c | --chown"
-    echo "    Change owner of /usr/share/code folder to $(whoami)"
+    echo "-c | --chown <username>"
+    echo "    Change owner of /usr/share/code folder to username"
     echo "    This option may useful if you use vscode patch extension"
+    echo "    Give \$USER to current user"
     echo "-k | --keep"
     echo "    Keep .dev .tar.gz .rpm file in cwd"
 }
@@ -22,6 +23,7 @@ USER="false"
 ARCH="unknown"
 UNINSTALL="false"
 CHOWN="false"
+OWNER=""
 KEEP="false"
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -46,7 +48,9 @@ while [[ $# -gt 0 ]]; do
             ;;
         -u|--user)
             USER="true"
+            OWNER="$2"
             shift # past argument
+            shift # past value
             ;;
         -f|--frontend)
             FRONTEND="$2"
@@ -195,6 +199,6 @@ fi
 [ "$KEEP" = "false" ] && rm $FILENAME
 
 # chown
-[ "$CHOWN" = "true" ] && echo "Changing owner of /usr/share/code to $(whoami)" && chown -R $(whoami) /usr/share/code
+[ "$CHOWN" = "true" ] && echo "Changing owner of /usr/share/code to $OWNER" && chown -R $OWNER /usr/share/code
 
 exit 0
