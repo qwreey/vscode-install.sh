@@ -30,7 +30,12 @@ $ ./vscodeInstaller.sh --help
     Keep .dev .tar.gz .rpm file in cwd
 ```
 
-## With curl (direct)
+## Download script with curl
 
+```
+# Download script
+curl https://raw.githubusercontent.com/qwreey75/vscodeInstall.sh/master/vscodeInstall.sh -s -o vscodeInstall.sh; chmod a+x vscodeInstall.sh
 
-
+# Run script
+sudo ./vscodeInstall.sh
+```
