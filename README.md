@@ -11,4 +11,26 @@ What is included?
 
 # Uses
 
-## By curl
+```
+$ ./vscodeInstaller.sh --help
+-f | --frontend <deb, rpm, tar.gz, auto>
+    Set frontend for install vscode. Defualt is auto
+-a | --arch <arm64, armhf, x64, auto>
+    Target arch, Default is auto (recommended)
+-u | --user
+    Do not check root permission
+-h | --help
+    Show this message
+--uninstall
+    Uninstall vscode
+-c | --chown
+    Change owner of /usr/share/code folder to qwreey
+    This option may useful if you use vscode patch extension
+-k | --keep
+    Keep .dev .tar.gz .rpm file in cwd
+```
+
+## With curl (direct)
+
+
+
