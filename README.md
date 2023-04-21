@@ -41,3 +41,9 @@ curl https://raw.githubusercontent.com/qwreey75/vscodeInstall.sh/master/vscodeIn
 # Run script
 sudo ./vscodeInstall.sh
 ```
+
+## One line
+
+```
+curl https://raw.githubusercontent.com/qwreey75/vscodeInstall.sh/master/vscodeInstall.sh -s | sudo bash
+```
