@@ -149,7 +149,8 @@ Name=New Empty Window
 Exec=/usr/share/code/code --new-window %F
 Icon=vscode
 END
+    ( which update-desktop-database )2>/dev/null && update-desktop-database 
 
 fi
+rm $FILENAME
 exit 0
-
