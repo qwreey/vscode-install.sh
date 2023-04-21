@@ -1,6 +1,6 @@
 # vscodeInstaller.sh
 
-Fastest, easiest way to install Microsoft offical Visual Studio Code build.
+Fastest, easiest way to install Microsoft offical Visual Studio Code build in linux.
 
 What is included?
 

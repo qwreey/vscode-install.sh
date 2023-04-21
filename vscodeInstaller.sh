@@ -9,15 +9,29 @@ help() {
   echo "    Do not check root permission"
   echo "-h | --help"
   echo "    Show this message"
+  echo "--uninstall"
+  echo "    Uninstall vscode"
+  echo "-c | --chown"
+  echo "    Change owner of /usr/share/code folder to $(whoami)"
+  echo "    This option may useful if you use vscode patch extension"
+  echo "-k | --keep"
+  echo "    Keep .dev .tar.gz .rpm file in cwd"
 }
 FRONTEND="none"
 USER="false"
 ARCH="unknown"
+UNINSTALL="false"
+CHOWN="false"
+KEEP="false"
 while [[ $# -gt 0 ]]; do
     case $1 in
         -h|--help|-help|help)
             help
             exit 0
+            ;;
+        -k|--keep)
+            KEEP="true"
+            shift # pass argument
             ;;
         -a|--arch)
             ARCH="$2"
@@ -43,6 +57,14 @@ while [[ $# -gt 0 ]]; do
             fi
             shift # past argument
             shift # past value
+            ;;
+        --uninstall)
+            UNINSTALL="true"
+            shift # past argument
+            ;;
+        -c|--chown)
+            CHOWN="true"
+            shift # pass argument
             ;;
         -*|--*)
             >&2 echo "Invalid option $1"
@@ -70,6 +92,24 @@ echo "Checking package manager frontends"
 [ "$FRONTEND" = "none" ] && (which dpkg)>/dev/null && FRONTEND="deb"
 [ "$FRONTEND" = "none" ] && (which rpm)>/dev/null && FRONTEND="rpm"
 [ "$FRONTEND" = "none" ] && FRONTEND="tar.gz" && echo "This system has no package manager frontend! try using tar.gz to install vscode ( Install location: /usr/local/bin )"
+
+# If uninstall
+if [ "$UNINSTALL" = "true" ]; then
+    if [ "$FRONTEND" = "deb" ]; then
+        dpkg -r code
+        [ "$?" != "0" ] && >&2 echo "Error: an error occurred from dpkg" && exit 1
+    elif [ "$FRONTEND" = "rpm" ]; then
+        rpm -e code
+        [ "$?" != "0" ] && >&2 echo "Error: an error occurred from rpm" && exit 1
+    elif [ "$FRONTEND" = "tar.gz" ]; then
+        rm -rf /usr/share/code
+        rm /usr/bin/code
+        rm /usr/bin/code-tunnel
+        rm /usr/share/applications/code.desktop
+        ( which update-desktop-database )2>/dev/null && update-desktop-database
+    fi
+    exit 0
+fi
 
 # Check system arch
 # arm-32bit arm armv7l  armhf armel
@@ -102,7 +142,7 @@ echo "Checking local installed version"
 LASTVERSION="none"
 (which code)>/dev/null && LASTVERSION=$( code --version --user-data-dir 2>/dev/null | head -n 1)
 [ "$LASTVERSION" != "none" ] && echo "Fount local version $LASTVERSION"
-#[ "$LASTVERSION" != "none" ] && [ "$LASTVERSION" = "$VERSION" ] && echo "vscode is up to date. Nothing changed" && exit 0
+[ "$LASTVERSION" != "none" ] && [ "$LASTVERSION" = "$VERSION" ] && echo "vscode is up to date. Nothing changed" && exit 0
 
 # Fetch file from remote
 FILENAME="vscode_download.${LASTVERSION}.${FRONTEND}"
@@ -111,6 +151,7 @@ if [ -e $FILENAME ]; then
 else
     echo "Fetching $FILENAME"
     curl $REDIRECT --output $FILENAME
+    chown -R $(whoami) $FILENAME
     [ "$?" != "0" ] && >&2 echo "Error: Failed download ${FRONTEND} file" && exit 1
 fi
 
@@ -118,10 +159,10 @@ fi
 echo "Installing . . ."
 if [ "$FRONTEND" = "deb" ]; then
     dpkg -i $FILENAME
-    [ "$?" != "0" ] && >&2 echo "Error: an Error occurred from dpkg" && exit 1
+    [ "$?" != "0" ] && >&2 echo "Error: an error occurred from dpkg" && exit 1
 elif [ "$FRONTEND" = "rpm" ]; then
     rpm -i $FILENAME
-    [ "$?" != "0" ] && >&2 echo "Error: an Error occurred from rpm" && exit 1
+    [ "$?" != "0" ] && >&2 echo "Error: an error occurred from rpm" && exit 1
 elif [ "$FRONTEND" = "tar.gz" ]; then
     [ -e /usr/share/code ] && rm -rf /usr/share/code
     mkdir -p /usr/share/code
@@ -149,8 +190,11 @@ Name=New Empty Window
 Exec=/usr/share/code/code --new-window %F
 Icon=vscode
 END
-    ( which update-desktop-database )2>/dev/null && update-desktop-database 
-
+    ( which update-desktop-database )2>/dev/null && update-desktop-database
 fi
-rm $FILENAME
+[ "$KEEP" = "false" ] && rm $FILENAME
+
+# chown
+[ "$CHOWN" = "true" ] && echo "Changing owner of /usr/share/code to $(whoami)" && chown -R $(whoami) /usr/share/code
+
 exit 0
