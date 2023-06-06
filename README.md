@@ -48,3 +48,7 @@ sudo ./vscodeInstall.sh
 ```
 curl https://raw.githubusercontent.com/qwreey75/vscodeInstall.sh/master/vscodeInstall.sh -s | sudo bash
 ```
+
+## TODO
+
+AUR, buildpkg  frontend
